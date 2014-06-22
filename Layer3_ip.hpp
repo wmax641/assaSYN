@@ -1,12 +1,12 @@
-#ifndef PACKET3_HEADER
-#define PACKET3_HEADER
+#ifndef LAYER3_IP_HEADER 
+#define LAYER3_IP_HEADER
 
 /*
  * Class which encapsulates and manages the creation of a level 3 IP packet
  * See method definitions below for details
  *
  * basically, do something like this;
- *    class Packet3 packet();
+ *    class IP_Hdr packet();
  *    packet.dest_ip("1.2.3.4");
  *    packet.src_ip("123.123.123.123");
  *    sendto(socket, packet.get_raw_packet(), packet.packet_len(), ...);
@@ -19,42 +19,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include <sys/socket.h>
-#include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/ip.h>
 #include <endian.h>
 
-#define _DEFAULT_PACKET_BUFFER_LEN 1300
 
-class Packet3 {
+class IP_Hdr {
 
    public:
 
-      /* Constructor, initialises memory requried for packet - pass in buffer len as
-       * argument
-       * If no argument is specified, will fall back to a default packet buffer size 
+      /* Constructor - pass in malloc'd memory buffer. Make sure it's long enough to
+       * house the ip hdr and any payload (tcp or whatever)
+       * 
+       * The memory address you pass in will the the beginning of the ip header
+       *    which is not necessarily the beginning of the buffer
        *
-       * This is not the size of the packet that will actually be sent, just the size
-       * of the buffer used to house the packet
-       *
-       * Some default values will be given   
        * */
-      Packet3();
-      Packet3(int buffer_len);
+      IP_Hdr(char *buf);
 
-      ~Packet3();
+      ~IP_Hdr();
 
-      /* return buffer that houses the packet */
-      char *get_raw_packet();
+      /* return buffer that houses the packet, so it returns a pointer to the
+       * address you passed into the constructor */
+      char *get();
 
       /* return pointer to beginning of level 4 payload in the packet buffer */
       char *get_payload();
 
-      /* returns the length of entire packet; the number of bytes to send over wire 
-       * If you constructed the packet manually without using these methods, then
-       * this value will be invalid */
-      int packet_len();
+      /* returns the length of the ip hdr ONLY*/
+      int hdr_len();
 
       /* Set various fields in IP header 
        *
@@ -75,7 +70,7 @@ class Packet3 {
       int frag(int frag);
       int tot_len(uint16_t total_len);
       int ttl(uint8_t ttl);
-      int protocol(int protocol);
+      int protocol(uint8_t protocol);
       int check(uint16_t check);
       int dest_ip(std::string ipaddr); /* You only have to do this! */
       int dest_ip(uint32_t ipaddr);    /* ...or this */
@@ -83,13 +78,13 @@ class Packet3 {
       int src_ip(uint32_t ipaddr);
 
 
-      char *raw_packet;
+   private:
+
+      char *ip_packet;
       struct iphdr *iphdr;
       int iphdr_len;
       int payload_len; 
       int buf_len;
-   private:
-
       
 
 };

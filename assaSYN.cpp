@@ -5,22 +5,27 @@
 #include <sys/socket.h>
 
 
-#include "Packet3.hpp"
+#include "Layer3_ip.hpp"
+#include "Layer4_tcp.hpp"
 
+#define _DEFAULT_PACKET_BUFFER_LEN 1000
 
 int main(void) {
 
+   char *buf = (char *)malloc(_DEFAULT_PACKET_BUFFER_LEN);
 
    try {
       /* Create custom ip packet */
-      class Packet3 packet(256);
-      packet.src_ip(1);
-      packet.dest_ip(2);
+      class IP_Hdr ip_hdr(buf);
+      ip_hdr.src_ip("111.111.111.111");
+      ip_hdr.dest_ip("222.222.222.222");
+
+      class TCP_Hdr tcp_hdr(buf + ip_hdr.hdr_len());
 
       int sock;
 
       /* sendto() requires a dummy address to send to, the actual destination ip adress
-       * will be set via Packet::dummy(dest_ip) method */
+       * will be set via Packet::dest_ip() method */
       struct sockaddr_in dummy;
       dummy.sin_family = AF_INET;
       dummy.sin_port = 0;
@@ -32,7 +37,7 @@ int main(void) {
          return(1);
       }
 
-      if(sendto(sock, packet.get_raw_packet(), packet.packet_len(), 0,
+      if(sendto(sock, ip_hdr.get(), ip_hdr.hdr_len(), 0,
                 (struct sockaddr *)&dummy, (socklen_t)sizeof(dummy)) < 0) {
          perror("error:");
       }
