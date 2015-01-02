@@ -61,13 +61,27 @@ int main(void) {
       /*   ^_^   */
 
       //while(1) {
+         randomise_identity(ip_hdr, tcp_hdr);
          if(sendto(sock, 
                    ip_hdr.get(), 
                    ip_hdr.hdr_len() + tcp_hdr.hdr_len(), 
                    0, (struct sockaddr *)&dummy, (socklen_t)sizeof(dummy))  < 0) {
             perror("error:");
          }
-         //randomise_identity(ip_hdr, tcp_hdr);
+         randomise_identity(ip_hdr, tcp_hdr);
+         if(sendto(sock, 
+                   ip_hdr.get(), 
+                   ip_hdr.hdr_len() + tcp_hdr.hdr_len(), 
+                   0, (struct sockaddr *)&dummy, (socklen_t)sizeof(dummy))  < 0) {
+            perror("error:");
+         }
+         randomise_identity(ip_hdr, tcp_hdr);
+         if(sendto(sock, 
+                   ip_hdr.get(), 
+                   ip_hdr.hdr_len() + tcp_hdr.hdr_len(), 
+                   0, (struct sockaddr *)&dummy, (socklen_t)sizeof(dummy))  < 0) {
+            perror("error:");
+         }
       //}
 
    } catch (const char *e) {
@@ -80,6 +94,7 @@ int main(void) {
 /* Changes some stuff */
 void randomise_identity(class IP_Hdr& ip_hdr, class TCP_Hdr& tcp_hdr) {
    ip_hdr.src_ip(rand());
+   ip_hdr.ttl(32 + (rand() & 0x7f));
 
    tcp_hdr.th_sport(5000 + (rand() % 55000));
    tcp_hdr.th_win(20000 + 200*(rand() % 50));
