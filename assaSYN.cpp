@@ -61,21 +61,7 @@ int main(void) {
       /*   ^_^   */
 
       //while(1) {
-         randomise_identity(ip_hdr, tcp_hdr);
-         if(sendto(sock, 
-                   ip_hdr.get(), 
-                   ip_hdr.hdr_len() + tcp_hdr.hdr_len(), 
-                   0, (struct sockaddr *)&dummy, (socklen_t)sizeof(dummy))  < 0) {
-            perror("error:");
-         }
-         randomise_identity(ip_hdr, tcp_hdr);
-         if(sendto(sock, 
-                   ip_hdr.get(), 
-                   ip_hdr.hdr_len() + tcp_hdr.hdr_len(), 
-                   0, (struct sockaddr *)&dummy, (socklen_t)sizeof(dummy))  < 0) {
-            perror("error:");
-         }
-         randomise_identity(ip_hdr, tcp_hdr);
+         //randomise_identity(ip_hdr, tcp_hdr);
          if(sendto(sock, 
                    ip_hdr.get(), 
                    ip_hdr.hdr_len() + tcp_hdr.hdr_len(), 
