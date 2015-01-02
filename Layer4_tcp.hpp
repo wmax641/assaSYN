@@ -1,3 +1,9 @@
+/*
+ * 
+ *
+ *
+ */
+
 #ifndef LAYER4_TCP_HEADER
 #define LAYER4_TCP_HEADER
 
@@ -6,47 +12,61 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "Layer3_ip.hpp"
+
 
 class TCP_Hdr {
 
    public:
 
       /* Constructor - pass in malloc'd memory buffer. Make sure it's long enough to
-       * house the tcp hdr and any payload 
+       * house the ip_hdr,  tcp_hdr and any payload 
        * 
-       * The memory address you pass in will the the beginning of the tcp header
-       *    which is not necessarily the beginning of the buffer
+       * The memory address you pass in will the the beginning of the ip header
+       * Also pass in the size of the ip header so we know where the tcp header begins
        *
+       * For example;
+       *    class TCP_Hdr tcp_hdr(buf,  ip_hdr.hdr_len());
+       * 
        * */
-      TCP_Hdr(char *buf);
+      TCP_Hdr(char *buf, int header_begin);
       ~TCP_Hdr();
 
       char *get();
       char *get_payload();
       int hdr_len();
 
-      int th_sport(uint16_t port);
-      int th_dport(uint16_t port);
-      int th_seq(uint32_t number);
-      int th_ack(uint32_t number);
-      int th_off(uint8_t offset);
-      int th_flags(uint8_t flags);
-/*
-       # define TH_FIN	0x01
-       # define TH_SYN	0x02
-       # define TH_RST	0x04
-       # define TH_PUSH	0x08
-       # define TH_ACK	0x10
-       # define TH_URG	0x20
-*/
+      /* Set various fields in tcp header
+       *
+       * Calling TCP_Hdr::init() will set defaults for a SYN packet 
+       * It also calculates and sets the TCP checksum
+       */
+      void init();
+      void th_sport(uint16_t port);
+      void th_dport(uint16_t port);
+      void th_seq(uint32_t number);
+      void th_ack(uint32_t number);
+      void th_off(uint8_t offset);
+      void th_flags(uint8_t flags);
+      void th_win(uint16_t win);
+      void th_sum(uint16_t sum);
+      void th_urp(uint16_t urp);
 
-
+      /* Recalculates tcp checksum of the tcp_hdr. This needs to be called if you changed
+       * values manually.
+       * */
+      void recalculate_checksum();
+       
    private:
 
+      char *ip_packet;
       char *tcp_packet;
       struct tcphdr *tcphdr;
+      struct iphdr *iphdr;
       int tcphdr_len;
       int payload_len; 
+
+      uint16_t calculate_tcp_checksum();
 
 };
 

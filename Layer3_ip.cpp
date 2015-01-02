@@ -9,7 +9,6 @@ IP_Hdr::IP_Hdr(char *buf) {
       throw("error: IP_Hdr::IP_Hdr(char *buf) - invalid buffer");
       return;
    }
-   init();
 }
 
 
