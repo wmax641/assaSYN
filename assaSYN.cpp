@@ -22,6 +22,8 @@
 
 #define _DEFAULT_PACKET_BUFFER_LEN 1000
 
+void randomise_identity(class IP_Hdr& ip_hdr, class TCP_Hdr& tcp_hdr);
+
 int main(void) {
 
    /* This will house the packet */
@@ -65,6 +67,7 @@ int main(void) {
                    0, (struct sockaddr *)&dummy, (socklen_t)sizeof(dummy))  < 0) {
             perror("error:");
          }
+         //randomise_identity(ip_hdr, tcp_hdr);
       //}
 
    } catch (const char *e) {
@@ -72,4 +75,15 @@ int main(void) {
       std::cerr << e << std::endl;
    }
    return(0);
+}
+
+/* Changes some stuff */
+void randomise_identity(class IP_Hdr& ip_hdr, class TCP_Hdr& tcp_hdr) {
+   ip_hdr.src_ip(rand());
+
+   tcp_hdr.th_sport(5000 + (rand() % 55000));
+   tcp_hdr.th_win(20000 + 200*(rand() % 50));
+   tcp_hdr.th_seq(rand());
+   tcp_hdr.recalculate_checksum();
+     
 }

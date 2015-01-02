@@ -57,13 +57,13 @@ void TCP_Hdr::th_flags(uint8_t flags) {
    tcphdr->th_flags = flags;
 }
 void TCP_Hdr::th_win(uint16_t win) {
-   tcphdr->th_win = win;
+   tcphdr->th_win = htobe16(win);
 }
 void TCP_Hdr::th_sum(uint16_t sum) {
    tcphdr->th_sum = sum;
 }
 void TCP_Hdr::th_urp(uint16_t urp) {
-   tcphdr->th_urp = urp;
+   tcphdr->th_urp = htobe16(urp);
 }
 
 void TCP_Hdr::init() {

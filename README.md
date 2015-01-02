@@ -12,3 +12,7 @@ ip.addr that doesn't belong to their address space and refuse to forward it.
 
 Go wild!! Do whatever you want with this
 
+Instructions (if you seriously want to use this beyond educational purposes):
+   uncomment while(1) loop in assaSYN.cpp
+   make and run
+   ??
