@@ -67,7 +67,7 @@ void TCP_Hdr::th_urp(uint16_t urp) {
 }
 
 void TCP_Hdr::init() {
-   tcphdr->th_sport = htobe16(5000 + (rand()%55000));
+   tcphdr->th_sport = htobe16(10000 + (rand() & 0x7fff) + (rand() & 0x3fff));
    tcphdr->th_dport = htobe16(80);
    tcphdr->th_seq = rand();
    tcphdr->th_ack = 0;

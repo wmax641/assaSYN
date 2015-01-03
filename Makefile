@@ -3,7 +3,7 @@ CFLAGS=-O
 LFLAGS= -lm -lcrypto
 OBJ= assaSYN.o Layer3_ip.o Layer4_tcp.o ip_helper.o
 
-main: ${OBJ}
+assaSYN: ${OBJ}
 	$(CC) -g -o $@ $^ $(LFLAGS) 
 
 assaSYN.o: assaSYN.cpp Layer3_ip.cpp Layer4_tcp.cpp

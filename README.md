@@ -12,5 +12,5 @@ Go wild!! Do whatever you want with this
 
 Instructions (if you want to use this beyond educational purposes):
   * uncomment while(1) loop in assaSYN.cpp
-  * make, run ./main
+  * make, run
   * ??
